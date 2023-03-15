@@ -210,20 +210,20 @@ function drawRobot() {
 
 function handleInput() {
   if (keyIsDown(UP_ARROW)) {
-    robot.ax = robot.acceleration;
+    driveForwards();
   } else if (keyIsDown(DOWN_ARROW)) {
-    robot.ax = -robot.acceleration;
+    driveBackwards();
   } else {
-    robot.ax = 0;
+    stopDrive();
   }
 
   if(keyIsDown(LEFT_ARROW)) {
-    robot.at = -robot.turnAcceleration;
+    turnLeft();
   } else if (keyIsDown(RIGHT_ARROW)) {
-    robot.at = robot.turnAcceleration;
+    turnRight();
   }
   else {
-    robot.at = 0;
+    stopTurn();
   }
 
   moveRobot();
@@ -251,6 +251,30 @@ function moveRobot() {
   checkCollision();
 
   drawRobot();
+}
+
+function driveForwards() {
+  robot.ax = robot.acceleration;
+}
+
+function driveBackwards() {
+  robot.ax = -robot.acceleration;
+}
+
+function turnLeft() {
+  robot.at = -robot.turnAcceleration;
+}
+
+function turnRight() {
+  robot.at = robot.turnAcceleration;
+}
+
+function stopDrive() {
+  robot.ax = 0;
+}
+
+function stopTurn() {
+  robot.at = 0;
 }
 
 function checkCollision() {
