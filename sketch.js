@@ -3,8 +3,8 @@ let robotSize = 38;
 
 let robot = {
   dimensions: robotSize,
-  x: 0,
-  y: 0,
+  x: 100,
+  y: 10,
   angle: 0,
   ax: 0, // Acceleration
   at: 0, // Turn acceleration
@@ -229,6 +229,12 @@ function handleInput() {
   moveRobot();
 }
 
+function rotatePoint(x, y, angle, originX, originY) {
+  let newX = (x - originX) * cos(angle) - (y - originY) * sin(angle) + originX;
+  let newY = (x - originX) * sin(angle) + (y - originY) * cos(angle) + originY;
+  return [newX, newY];
+}
+
 function moveRobot() {
   robot.vx += robot.ax;
   robot.vt += robot.at;
@@ -243,12 +249,39 @@ function moveRobot() {
   robot.y += robot.vx * sin(robot.angle);
 
   // constrain robot to the canvas
-  robot.x = constrain(robot.x, robotSize/2, width-robotSize/2);
   robot.y = constrain(robot.y, robotSize/2, height-robotSize/2);
+
+  //get the coordinates to all the corners of the square
+  let corner1 = [robot.x + robot.dimensions/2, robot.y + robot.dimensions/2];
+  let corner2 = [robot.x + robot.dimensions/2, robot.y - robot.dimensions/2];
+  let corner3 = [robot.x - robot.dimensions/2, robot.y - robot.dimensions/2];
+  let corner4 = [robot.x - robot.dimensions/2, robot.y + robot.dimensions/2];
+
+  //rotate the corners
+  let rotatedCorner1 = rotatePoint(corner1[0],corner1[1], robot.angle, robot.x, robot.y);
+  let rotatedCorner2 = rotatePoint(corner2[0],corner2[1], robot.angle, robot.x, robot.y);
+  let rotatedCorner3 = rotatePoint(corner3[0],corner3[1], robot.angle, robot.x, robot.y);
+  let rotatedCorner4 = rotatePoint(corner4[0],corner4[1], robot.angle, robot.x, robot.y);
+
+  let corners = [rotatedCorner1, rotatedCorner2, rotatedCorner3, rotatedCorner4];
+  let minDistance = 100000;
+  for (let index = 0; index < 4; index++) {
+    let corner = corners[index];
+    let distance = corner[0];
+    if (distance < minDistance) {
+      minDistance = distance;
+    }
+  }
+
+  robot.x = constrain(robot.x, robot.x - minDistance, width-robotSize/2);
+
+
+
+
+  checkCollision();
 
   robot.angle += robot.vt;
 
-  checkCollision();
 
   drawRobot();
 }
@@ -262,10 +295,12 @@ function driveBackwards() {
 }
 
 function turnLeft() {
+ 
   robot.at = -robot.turnAcceleration;
 }
 
 function turnRight() {
+  
   robot.at = robot.turnAcceleration;
 }
 
@@ -278,30 +313,6 @@ function stopTurn() {
 }
 
 function checkCollision() {
-  
-  //check collision in the x axis with the bumper
-  if (robot.x + robot.dimensions/2 > bumpers[0].x - bumpers[0].width/2 && robot.x - robot.dimensions/2 < bumpers[0].x + bumpers[0].width/2) {
-    //check collision in the y axis with the bumper
-    if (robot.y + robot.dimensions/2 > bumpers[0].y - bumpers[0].height/2 && robot.y - robot.dimensions/2 < bumpers[0].y + bumpers[0].height/2) {
-      // Undo the last move
-      robot.x -= robot.vx * cos(robot.angle);
-      robot.y -= robot.vx * sin(robot.angle);
-      //undo the last turn
-      robot.angle -= robot.vt;
-      //stop it form getting stuck
-      robot.vt = 0;
-
-      
-      console.log('collision');
-  
-  
-      robot.vx = 0;
-      robot.vy = 0;
-      robot.ax = 0;
-      robot.ay = 0;
-    }
-  }
-
   //check collision with the other bumber
   if (robot.x + robot.dimensions/2 > bumpers[1].x - bumpers[1].width/2 && robot.x - robot.dimensions/2 < bumpers[1].x + bumpers[1].width/2) {
     //check collision in the y axis with the bumper
@@ -324,10 +335,4 @@ function checkCollision() {
       robot.ay = 0;
     }
   }
-
-
-
-
-
-
 }
