@@ -278,18 +278,56 @@ function stopTurn() {
 }
 
 function checkCollision() {
-  // Get the distance between the robot and the bumper
-  let d = dist(robot.x, robot.y, bumpers[0].x, bumpers[1].y);
+  
+  //check collision in the x axis with the bumper
+  if (robot.x + robot.dimensions/2 > bumpers[0].x - bumpers[0].width/2 && robot.x - robot.dimensions/2 < bumpers[0].x + bumpers[0].width/2) {
+    //check collision in the y axis with the bumper
+    if (robot.y + robot.dimensions/2 > bumpers[0].y - bumpers[0].height/2 && robot.y - robot.dimensions/2 < bumpers[0].y + bumpers[0].height/2) {
+      // Undo the last move
+      robot.x -= robot.vx * cos(robot.angle);
+      robot.y -= robot.vx * sin(robot.angle);
+      //undo the last turn
+      robot.angle -= robot.vt;
+      //stop it form getting stuck
+      robot.vt = 0;
 
-  // Check if the distance is less than their two radii (an overlap)
-  if (d < robot.dimensions/2 + bumpers[0].width/2) {
-    // Undo the last move
-    robot.x -= robot.vx * cos(robot.angle);
-    robot.y -= robot.vx * sin(robot.angle);
-
-    robot.vx = 0;
-    robot.vy = 0;
-    robot.ax = 0;
-    robot.ay = 0;
+      
+      console.log('collision');
+  
+  
+      robot.vx = 0;
+      robot.vy = 0;
+      robot.ax = 0;
+      robot.ay = 0;
+    }
   }
+
+  //check collision with the other bumber
+  if (robot.x + robot.dimensions/2 > bumpers[1].x - bumpers[1].width/2 && robot.x - robot.dimensions/2 < bumpers[1].x + bumpers[1].width/2) {
+    //check collision in the y axis with the bumper
+    if (robot.y + robot.dimensions/2 > bumpers[1].y - bumpers[1].height/2 && robot.y - robot.dimensions/2 < bumpers[1].y + bumpers[1].height/2) {
+      // Undo the last move
+      robot.x -= robot.vx * cos(robot.angle);
+      robot.y -= robot.vx * sin(robot.angle);
+      //undo the last turn
+      robot.angle -= robot.vt;
+      //stop it form getting stuck
+      robot.vt = 0;
+
+      
+      console.log('collision');
+  
+  
+      robot.vx = 0;
+      robot.vy = 0;
+      robot.ax = 0;
+      robot.ay = 0;
+    }
+  }
+
+
+
+
+
+
 }
