@@ -1,49 +1,132 @@
 let dimensions = 365;
 let robotSize = 38;
+let discSize = dimensions*0.045;
 
-let robot = {
-  dimensions: robotSize,
-  x: 100,
-  y: 10,
-  angle: 0,
-  ax: 0, // Acceleration
-  at: 0, // Turn acceleration
-  vx: 0, // Velocity
-  vt: 0, // Turn velocity
-  acceleration: 0.5, // How much can the robot accelerate per frame
-  turnAcceleration: 0.01, // How much can the robot accelerate per frame
-  friction: 0.85, // How much friction is applied to the robot
-  turnFriction: 0.85, // How much friction is applied to the robot when turning
-  maxSpeed: 10, // Maximum speed of the robot
-  maxTurnSpeed: 0.1, // Maximum turn speed of the robot
+class Robot {
+  constructor(dimensions, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed) {
+    this.dimensions = dimensions;
+    this.x = x;
+    this.y = y;
+    this.angle = angle;
+    this.ax = 0; // Acceleration
+    this.at = 0; // Turn acceleration
+    this.vx = 0; // Velocity
+    this.vt = 0; // Turn velocity
+    this.acceleration = acceleration; // How much can the robot accelerate per frame
+    this.turnAcceleration = turnAcceleration; // How much can the robot accelerate per frame
+    this.friction = friction; // How much friction is applied to the robot
+    this.turnFriction = turnFriction; // How much friction is applied to the robot when turning
+    this.maxSpeed = maxSpeed; // Maximum speed of the robot
+    this.maxTurnSpeed = maxTurnSpeed; // Maximum turn speed of the robot
+  }
+
+  driveForwards() {
+    this.ax = this.acceleration;
+  }
+
+  driveBackwards() {
+    this.ax = -this.acceleration;
+  }
+
+  turnLeft() {
+    this.at = -this.turnAcceleration;
+  }
+
+  turnRight() {
+    this.at = this.turnAcceleration;
+  }
+
+  stopDrive() {
+    this.ax = 0;
+  }
+
+  stopTurn() {
+    this.at = 0;
+  }
 }
 
-let bumpers = [
-  {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  },
-  {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  },
-  {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  },
-  {
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  },
-]
+class Disc {
+  constructor(x, y, size, color=[255, 215, 0]) {
+    this.x = x;
+    this.y = y;
+    this.angle = 0;
+    this.size = size;
+    this.color = color;
+  }
+
+  draw() {
+    strokeWeight(0);
+    fill(this.color[0], this.color[1], this.color[2]);
+    circle(this.x, this.y, this.size);
+  }
+
+  checkCollision() {
+    let distance = dist(this.x, this.y, robot.x, robot.y);
+    if (distance < this.size/2 + robot.dimensions/2) {
+      // push the disc
+      let angle = atan2(this.y - robot.y, this.x - robot.x);
+      this.x += cos(angle) * 2;
+      this.y += sin(angle) * 2;
+
+      this.x = constrain(this.x, discSize/2, dimensions-discSize/2);
+      this.y = constrain(this.y, discSize/2, dimensions-discSize/2);
+
+      // Check collisions with other discs
+      discs.map(disc => {
+        if (disc != this) {
+          let distance = dist(this.x, this.y, disc.x, disc.y);
+          if (distance < this.size/2 + disc.size/2) {
+            // push the disc
+            let angle = atan2(this.y - disc.y, this.x - disc.x);
+            this.x += cos(angle) * 2;
+            this.y += sin(angle) * 2;
+          }
+        }
+      });
+    }
+  }
+}
+
+let robot = new Robot(robotSize, x=100, y=10, ang=0, acc=0.5, tAcc=0.01, f=0.85, tf=0.85, maxSp=10, maxTSp=0.1);
+
+let discsCords = [
+  [dimensions/12, dimensions/12],
+  [dimensions/6, dimensions/6],
+  [dimensions/4, dimensions/4],
+  [dimensions/3, dimensions/3],
+  [dimensions/2.4, dimensions/2.4],
+  [dimensions/1.72, dimensions/1.72],
+  [dimensions/1.5, dimensions/1.5],
+  [dimensions/1.335, dimensions/1.335],
+  [dimensions/1.2, dimensions/1.2],
+  [dimensions/1.09, dimensions/1.09],
+
+  [dimensions/2.4, dimensions/4],
+  [dimensions/2, dimensions/3],
+  [dimensions/1.72, dimensions/2.4],
+  [dimensions/1.335, dimensions/1.72],
+
+  [dimensions/4, dimensions/2.4],
+  [dimensions/2.4, dimensions/1.72],
+  [dimensions/1.99, dimensions/1.5],
+  [dimensions/1.72, dimensions/1.335],
+
+  [dimensions/6+discSize/2, dimensions/1.5-discSize/2],
+  [dimensions/4.4+discSize/2, dimensions/1.5-discSize/2],
+  [dimensions/3.5+discSize/2, dimensions/1.5-discSize/2],
+  [dimensions/2.9+discSize/2, dimensions/1.4-discSize/2],
+  [dimensions/2.9+discSize/2, dimensions/1.293-discSize/2],
+  [dimensions/2.9+discSize/2, dimensions/1.2-discSize/2],
+
+  [dimensions/1.5-discSize/2, dimensions/6+discSize/2],
+  [dimensions/1.5-discSize/2, dimensions/4.4+discSize/2],
+  [dimensions/1.5-discSize/2, dimensions/3.5+discSize/2],
+  [dimensions/1.4-discSize/2, dimensions/2.9+discSize/2],
+  [dimensions/1.293-discSize/2, dimensions/2.9+discSize/2],
+  [dimensions/1.2-discSize/2, dimensions/2.9+discSize/2],
+];
+
+let discs = discsCords.map(([x,y]) => new Disc(x,y, discSize));
 
 function setup() {
   createCanvas(dimensions, dimensions);
@@ -79,11 +162,6 @@ function drawField() {
   line(width/1.5, width, width/1.5, height/1.08);
   line(width/3, 0, width/3, height/13);
   line(width/1.08, height/1.2, width, height/1.2);
-
-  // Goal Poles
-  strokeWeight(5);
-  line(0, height/1.35, width/3.85, height);
-  line(width/1.33, 0, width, height/4);
   
   // Goal Red Bottom Bump
   strokeWeight(5);
@@ -91,46 +169,24 @@ function drawField() {
   line(width/6, height/1.48, width/3, height/1.48);
   line(width/3, height/1.48, width/3, height/1.2);
 
-  bumpers[0] = {
-    x: (width/3+width/6)/2,
-    y: height/1.48,
-    width: dist(width/3, height/1.48, width/6, height/1.48),
-    height: 5,
-  }
-
-  bumpers[1] = {
-    x: width/3,
-    y: (height/1.48+height/1.2)/2,
-    width: 5,
-    height: dist(height/1.48, width/3, height/1.2, width/3),
-  }
-
   // Goal Blue Bottom Bump
   strokeWeight(5);
   stroke(0, 0, 255);
   line(width/1.48, height/6, width/1.48, height/3);
   line(width/1.48, height/3, width/1.2, height/3);
 
-  bumpers[2] = {
-    x: (width/1.48+width/1.2)/2,
-    y: height/3,
-    width: dist(width/1.48, height/3, width/1.2, height/3),
-    height: 5,
-  }
-
-  bumpers[3] = {
-    x: width/1.48,
-    y: (height/3+height/6)/2,
-    width: 5,
-    height: dist(height/3, width/1.48, height/6, width/1.48),
-  }
-
-  drawGoals();
   drawDiscs();
+  drawGoals();
 }
 
 function drawGoals() {
   let goalSize = width*0.1;
+
+  // Goal Poles
+  stroke(255);
+  strokeWeight(5);
+  line(0, height/1.35, width/3.85, height);
+  line(width/1.33, 0, width, height/4);
 
   fill(0, 0, 0, 0);
   strokeWeight(3);
@@ -148,54 +204,11 @@ function drawGoals() {
 }
 
 function drawDiscs() {
-  let discSize = width*0.045;
-
-  let discsCords = [
-    [width/12, width/12],
-    [width/6, width/6],
-    [width/4, width/4],
-    [width/3, width/3],
-    [width/2.4, width/2.4],
-    [width/1.72, width/1.72],
-    [width/1.5, width/1.5],
-    [width/1.335, width/1.335],
-    [width/1.2, width/1.2],
-    [width/1.09, width/1.09],
-
-    [width/2.4, width/4],
-    [width/2, width/3],
-    [width/1.72, width/2.4],
-    [width/1.335, width/1.72],
-
-    [width/4, width/2.4],
-    [width/2.4, width/1.72],
-    [width/1.99, width/1.5],
-    [width/1.72, width/1.335],
-
-    [width/6+discSize/2, width/1.5-discSize/2],
-    [width/4.4+discSize/2, width/1.5-discSize/2],
-    [width/3.5+discSize/2, width/1.5-discSize/2],
-    [width/2.9+discSize/2, width/1.4-discSize/2],
-    [width/2.9+discSize/2, width/1.293-discSize/2],
-    [width/2.9+discSize/2, width/1.2-discSize/2],
-
-    [width/1.5-discSize/2, width/6+discSize/2],
-    [width/1.5-discSize/2, width/4.4+discSize/2],
-    [width/1.5-discSize/2, width/3.5+discSize/2],
-    [width/1.4-discSize/2, width/2.9+discSize/2],
-    [width/1.293-discSize/2, width/2.9+discSize/2],
-    [width/1.2-discSize/2, width/2.9+discSize/2],
-  ];
-
-  fill(255, 215, 0);
-  strokeWeight(0);
-
-  discsCords.map(([x,y]) => {
-    circle(x, y, discSize);
-  })
+  discs.map((disc, index) => {
+    disc.draw();
+    disc.checkCollision();
+  });
 }
-
-let startingPoint = 1;
 
 function drawRobot() {
   fill(50, 170, 70);
@@ -210,20 +223,20 @@ function drawRobot() {
 
 function handleInput() {
   if (keyIsDown(UP_ARROW)) {
-    driveForwards();
+    robot.driveForwards();
   } else if (keyIsDown(DOWN_ARROW)) {
-    driveBackwards();
+    robot.driveBackwards();
   } else {
-    stopDrive();
+    robot.stopDrive();
   }
 
   if(keyIsDown(LEFT_ARROW)) {
-    turnLeft();
+    robot.turnLeft();
   } else if (keyIsDown(RIGHT_ARROW)) {
-    turnRight();
+    robot.turnRight();
   }
   else {
-    stopTurn();
+    robot.stopTurn();
   }
 
   moveRobot();
@@ -232,6 +245,7 @@ function handleInput() {
 function rotatePoint(x, y, angle, originX, originY) {
   let newX = (x - originX) * cos(angle) - (y - originY) * sin(angle) + originX;
   let newY = (x - originX) * sin(angle) + (y - originY) * cos(angle) + originY;
+  
   return [newX, newY];
 }
 
@@ -245,94 +259,53 @@ function moveRobot() {
   robot.vx = constrain(robot.vx, -robot.maxSpeed, robot.maxSpeed);
   robot.vt = constrain(robot.vt, -robot.maxTurnSpeed, robot.maxTurnSpeed);
 
+  robot.angle += robot.vt;
+
   robot.x += robot.vx * cos(robot.angle);
   robot.y += robot.vx * sin(robot.angle);
 
-  // constrain robot to the canvas
-  robot.y = constrain(robot.y, robotSize/2, height-robotSize/2);
-
-  //get the coordinates to all the corners of the square
-  let corner1 = [robot.x + robot.dimensions/2, robot.y + robot.dimensions/2];
-  let corner2 = [robot.x + robot.dimensions/2, robot.y - robot.dimensions/2];
-  let corner3 = [robot.x - robot.dimensions/2, robot.y - robot.dimensions/2];
-  let corner4 = [robot.x - robot.dimensions/2, robot.y + robot.dimensions/2];
-
-  //rotate the corners
-  let rotatedCorner1 = rotatePoint(corner1[0],corner1[1], robot.angle, robot.x, robot.y);
-  let rotatedCorner2 = rotatePoint(corner2[0],corner2[1], robot.angle, robot.x, robot.y);
-  let rotatedCorner3 = rotatePoint(corner3[0],corner3[1], robot.angle, robot.x, robot.y);
-  let rotatedCorner4 = rotatePoint(corner4[0],corner4[1], robot.angle, robot.x, robot.y);
-
-  let corners = [rotatedCorner1, rotatedCorner2, rotatedCorner3, rotatedCorner4];
-  let minDistance = 100000;
-  for (let index = 0; index < 4; index++) {
-    let corner = corners[index];
-    let distance = corner[0];
-    if (distance < minDistance) {
-      minDistance = distance;
-    }
-  }
-
-  robot.x = constrain(robot.x, robot.x - minDistance, width-robotSize/2);
-
-
-
-
-  checkCollision();
-
-  robot.angle += robot.vt;
-
-
+  checkWallCollisions();
   drawRobot();
+  drawGoals();
 }
 
-function driveForwards() {
-  robot.ax = robot.acceleration;
-}
+function checkWallCollisions() {
+  let corners = [
+    rotatePoint(robot.x + robot.dimensions/2, robot.y + robot.dimensions/2, robot.angle, robot.x, robot.y),
+    rotatePoint(robot.x + robot.dimensions/2, robot.y - robot.dimensions/2, robot.angle, robot.x, robot.y),
+    rotatePoint(robot.x - robot.dimensions/2, robot.y - robot.dimensions/2, robot.angle, robot.x, robot.y),
+    rotatePoint(robot.x - robot.dimensions/2, robot.y + robot.dimensions/2, robot.angle, robot.x, robot.y)
+  ];
 
-function driveBackwards() {
-  robot.ax = -robot.acceleration;
-}
+  // Corner's coordinates that are closest to the wall
+  let nearestCorners = [
+    corners[0][0], // Nearest x coord to the left
+    corners[0][0], // Nearest x coord to the right
+    corners[0][1], // Nearest y coord to the top
+    corners[0][1] // Nearest y coord to the bottom
+  ];
 
-function turnLeft() {
- 
-  robot.at = -robot.turnAcceleration;
-}
-
-function turnRight() {
+  for (let i = 0; i < nearestCorners.length; i++) {
+    for (let j = 0; j < corners.length; j++) {
+      let corner = corners[j][i<2 ? 0 : 1];
   
-  robot.at = robot.turnAcceleration;
-}
-
-function stopDrive() {
-  robot.ax = 0;
-}
-
-function stopTurn() {
-  robot.at = 0;
-}
-
-function checkCollision() {
-  //check collision with the other bumber
-  if (robot.x + robot.dimensions/2 > bumpers[1].x - bumpers[1].width/2 && robot.x - robot.dimensions/2 < bumpers[1].x + bumpers[1].width/2) {
-    //check collision in the y axis with the bumper
-    if (robot.y + robot.dimensions/2 > bumpers[1].y - bumpers[1].height/2 && robot.y - robot.dimensions/2 < bumpers[1].y + bumpers[1].height/2) {
-      // Undo the last move
-      robot.x -= robot.vx * cos(robot.angle);
-      robot.y -= robot.vx * sin(robot.angle);
-      //undo the last turn
-      robot.angle -= robot.vt;
-      //stop it form getting stuck
-      robot.vt = 0;
-
-      
-      console.log('collision');
-  
-  
-      robot.vx = 0;
-      robot.vy = 0;
-      robot.ax = 0;
-      robot.ay = 0;
+      if (i%2 === 0 ? corner < nearestCorners[i] : corner > nearestCorners[i]) {
+        nearestCorners[i] = corner;
+      }
     }
   }
+
+  let offset = {
+    x: [
+      robot.x - nearestCorners[0],
+      width + (robot.x - nearestCorners[1])
+    ],
+    y: [
+      robot.y - nearestCorners[2],
+      height + (robot.y - nearestCorners[3])
+    ],
+  }
+
+  robot.x = constrain(robot.x, offset.x[0], offset.x[1]);
+  robot.y = constrain(robot.y, offset.y[0], offset.y[1]);
 }
