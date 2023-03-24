@@ -1,8 +1,8 @@
 class Robot {
-    constructor(dimensions, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed) {
-      this.dimensions = dimensions;
-      this.x = x;
-      this.y = y;
+    constructor(x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed) {
+      this.size = 38; // Size of the robot
+      this.x = x; // X position
+      this.y = y; // Y position
       this.angle = angle;
       this.ax = 0; // Acceleration
       this.at = 0; // Turn acceleration
@@ -14,12 +14,12 @@ class Robot {
       this.turnFriction = turnFriction; // How much friction is applied to the robot when turning
       this.maxSpeed = maxSpeed; // Maximum speed of the robot
       this.maxTurnSpeed = maxTurnSpeed; // Maximum turn speed of the robot
-      this.corners = [
-        [this.x + this.dimensions/2, this.y + this.dimensions/2],
-        [this.x + this.dimensions/2, this.y - this.dimensions/2],
-        [this.x - this.dimensions/2, this.y - this.dimensions/2],
-        [this.x - this.dimensions/2, this.y + this.dimensions/2]
-      ]; // Corner coords of the robot
+      this.corners = [ // Corner coords of the robot
+        [this.x + this.size/2, this.y + this.size/2],
+        [this.x + this.size/2, this.y - this.size/2],
+        [this.x - this.size/2, this.y - this.size/2],
+        [this.x - this.size/2, this.y + this.size/2]
+      ];
     }
 
     draw() {
@@ -29,7 +29,7 @@ class Robot {
       translate(this.x, this.y);
       rotate(this.angle);
       rectMode(CENTER);
-      rect(0, 0, this.dimensions, this.dimensions);
+      rect(0, 0, this.size, this.size);
       pop();
     }
 
@@ -79,17 +79,17 @@ class Robot {
 
     updateCornerCoords() {
       let corners = [
-        rotatePoint(this.x + this.dimensions/2, this.y + this.dimensions/2, this.angle, this.x, this.y),
-        rotatePoint(this.x + this.dimensions/2, this.y - this.dimensions/2, this.angle, this.x, this.y),
-        rotatePoint(this.x - this.dimensions/2, this.y - this.dimensions/2, this.angle, this.x, this.y),
-        rotatePoint(this.x - this.dimensions/2, this.y + this.dimensions/2, this.angle, this.x, this.y)
+        rotatePoint(this.x + this.size/2, this.y + this.size/2, this.angle, this.x, this.y),
+        rotatePoint(this.x + this.size/2, this.y - this.size/2, this.angle, this.x, this.y),
+        rotatePoint(this.x - this.size/2, this.y - this.size/2, this.angle, this.x, this.y),
+        rotatePoint(this.x - this.size/2, this.y + this.size/2, this.angle, this.x, this.y)
       ];
     
       this.corners = corners;
     }
 
     checkWallCollisions() {
-      // Corner's coordinates that are closest to the wall
+      // Corner coordinates that are closest to the wall
       let nearestCorners = [
         this.corners[0][0], // Nearest x coord to the left
         this.corners[0][0], // Nearest x coord to the right

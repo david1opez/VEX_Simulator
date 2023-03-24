@@ -1,8 +1,7 @@
 let dimensions = 365;
 
-let robotSize = 38;
-
 let discSize = dimensions*0.045;
+
 let discsCords = [
   [dimensions/12, dimensions/12],
   [dimensions/6, dimensions/6],
@@ -40,7 +39,7 @@ let discsCords = [
   [dimensions/1.2-discSize/2, dimensions/2.9+discSize/2],
 ];
 
-let robot = new Robot(robotSize, x=18, y=83, ang=0, acc=0.5, tAcc=0.01, f=0.85, tf=0.85, maxSp=10, maxTSp=0.1);
+let robot = new Robot(18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1);
 
 let discs = discsCords.map(([x,y]) => new Disc(x,y, discSize));
 
