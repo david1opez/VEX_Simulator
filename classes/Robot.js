@@ -33,6 +33,27 @@ class Robot {
       pop();
     }
 
+    handleInput() {
+      if (keyIsDown(UP_ARROW)) {
+        this.driveForwards();
+      } else if (keyIsDown(DOWN_ARROW)) {
+        this.driveBackwards();
+      } else {
+        this.stopDrive();
+      }
+    
+      if(keyIsDown(LEFT_ARROW)) {
+        this.turnLeft();
+      } else if (keyIsDown(RIGHT_ARROW)) {
+        this.turnRight();
+      }
+      else {
+        this.stopTurn();
+      }
+    
+      this.move();
+    }
+
     move() {
       this.vx += this.ax;
       this.vt += this.at;

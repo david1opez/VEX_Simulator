@@ -52,7 +52,7 @@ function draw() {
   drawField();
 
   frameRate(60);
-  handleInput();
+  robot.handleInput();
   drawGoals();
 }
 
@@ -124,25 +124,4 @@ function drawDiscs() {
     disc.checkRobotCollision(robot.corners);
     disc.checkDiscsCollision();
   });
-}
-
-function handleInput() {
-  if (keyIsDown(UP_ARROW)) {
-    robot.driveForwards();
-  } else if (keyIsDown(DOWN_ARROW)) {
-    robot.driveBackwards();
-  } else {
-    robot.stopDrive();
-  }
-
-  if(keyIsDown(LEFT_ARROW)) {
-    robot.turnLeft();
-  } else if (keyIsDown(RIGHT_ARROW)) {
-    robot.turnRight();
-  }
-  else {
-    robot.stopTurn();
-  }
-
-  robot.move();
 }
