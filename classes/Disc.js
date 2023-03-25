@@ -30,8 +30,8 @@ class Disc {
         this.x += Math.cos(angle) * 5;
         this.y += Math.sin(angle) * 5;
   
-        this.x = constrain(this.x, discSize/2, dimensions - discSize/2);
-        this.y = constrain(this.y, discSize/2, dimensions - discSize/2);
+        this.x = constrain(this.x, 16.5/2, 365 - 16.5/2);
+        this.y = constrain(this.y, 16.5/2, 365 - 16.5/2);
       }
     }
 
@@ -47,8 +47,8 @@ class Disc {
             this.x += Math.cos(angle) * 2;
             this.y += Math.sin(angle) * 2;
   
-            this.x = constrain(this.x, discSize/2, dimensions - discSize/2);
-            this.y = constrain(this.y, discSize/2, dimensions - discSize/2);
+            this.x = constrain(this.x, 16.5/2, 365 - 16.5/2);
+            this.y = constrain(this.y, 16.5/2, 365 - 16.5/2);
           }
         }
       }
