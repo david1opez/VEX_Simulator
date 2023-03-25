@@ -6,6 +6,7 @@ class Disc {
       this.size = size;
       this.color = color;
       this.flying = false;
+      this.collidingWalls = [0,0,0,0]
     }
   
     draw(robotCorners) {
@@ -15,6 +16,7 @@ class Disc {
 
       this.checkRobotCollision(robotCorners);
       this.checkDiscsCollision();
+      this.checkWallCollisions();
     }
   
     checkRobotCollision(robotCorners) {
@@ -35,6 +37,8 @@ class Disc {
   
         this.x = constrain(this.x, 16.5/2, 365 - 16.5/2);
         this.y = constrain(this.y, 16.5/2, 365 - 16.5/2);
+
+        return true;
       }
     }
 
@@ -54,6 +58,28 @@ class Disc {
             this.y = constrain(this.y, 16.5/2, 365 - 16.5/2);
           }
         }
+      }
+    }
+
+    checkWallCollisions() {
+      if(this.x <= this.size/2) { // Left Wall
+        this.x += 2;
+        this.collidingWalls[0] = 1;
+      }
+
+      if(this.x >= 365 - this.size/2) { // Right Wall
+        this.x -= 2;
+        this.collidingWalls[2] = 1;
+      }
+
+      if(this.y <= this.size/2) { // Top Wall
+        this.y += 2;
+        this.collidingWalls[1] = 1;
+      }
+
+      if(this.y >= 365 - this.size/2) { // Bottom Wall
+        this.y -= 2;
+        this.collidingWalls[3] = 1;
       }
     }
   }

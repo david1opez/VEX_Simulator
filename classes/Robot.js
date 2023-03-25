@@ -33,7 +33,7 @@ class Robot {
       pop();
     }
 
-    handleInput() {
+    handleInput(discs) {
       if (keyIsDown(UP_ARROW)) {
         this.driveForwards();
       } else if (keyIsDown(DOWN_ARROW)) {
@@ -51,7 +51,7 @@ class Robot {
         this.stopTurn();
       }
     
-      this.move();
+      this.move(discs);
     }
 
     move() {
@@ -71,6 +71,7 @@ class Robot {
 
       this.updateCornerCoords();
       this.checkWallCollisions();
+      this.checkDiscCollisions(discs);
       this.draw();
     }
   
@@ -141,5 +142,31 @@ class Robot {
 
       this.x = constrain(this.x, offset.x[0], offset.x[1]);
       this.y = constrain(this.y, offset.y[0], offset.y[1]);
+    }
+
+    checkDiscCollisions(discs) {
+      discs.map((disc) => {
+        if(disc.checkRobotCollision(this.corners)) {
+          if(disc.collidingWalls[0] == 1) { // Disc is colliding with the left wall
+            this.x = disc.x + disc.size/2 + this.size/2;
+            this.vx = 0;
+          }
+
+          if(disc.collidingWalls[1] == 1) { // Disc is colliding with the top wall
+            this.y = disc.y + disc.size/2 + this.size/2;
+            this.vx = 0;
+          }
+
+          if(disc.collidingWalls[2] == 1) { // Disc is colliding with the right wall
+            this.x = disc.x - disc.size/2 - this.size/2;
+            this.vx = 0;
+          }
+
+          if(disc.collidingWalls[3] == 1) { // Disc is colliding with the bottom wall
+            this.y = disc.y - disc.size/2 - this.size/2;
+            this.vx = 0;
+          }
+        }
+      })
     }
   }

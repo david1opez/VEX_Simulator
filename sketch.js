@@ -53,6 +53,6 @@ function draw() {
 
   field.draw();
   discs.map((disc) => disc.draw(robot.corners));
-  robot.handleInput();
+  robot.handleInput(discs);
   goals.map((goal) => goal.draw());
 };
