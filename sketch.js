@@ -43,6 +43,11 @@ let robot = new Robot(18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1);
 
 let discs = discsCords.map(([x,y]) => new Disc(x,y, discSize));
 
+let goals = [
+  new Goal("red"),
+  new Goal("blue"),
+]
+
 function setup() {
   createCanvas(dimensions, dimensions);
   background(255);
@@ -52,8 +57,9 @@ function draw() {
   drawField();
 
   frameRate(60);
+  
   robot.handleInput();
-  drawGoals();
+  goals.map((goal) => goal.draw());
 }
 
 function drawField() {
@@ -92,30 +98,6 @@ function drawField() {
   line(width/1.48, height/3, width/1.2, height/3);
 
   drawDiscs();
-}
-
-function drawGoals() {
-  let goalSize = width*0.1;
-
-  // Goal Poles
-  stroke(255);
-  strokeWeight(5);
-  line(0, height/1.35, width/3.85, height);
-  line(width/1.33, 0, width, height/4);
-
-  fill(0, 0, 0, 0);
-  strokeWeight(3);
-  stroke(255, 0, 0);
-  circle(width/12+goalSize/2, height/1.09-goalSize/2, goalSize);
-  fill(255, 0, 0);
-  circle(width/12+goalSize/2, height/1.09-goalSize/2, goalSize/1.7);
-
-  fill(0, 0, 0, 0);
-  strokeWeight(3);
-  stroke(0, 0, 255);
-  circle(width/1.09-goalSize/2, height/12+goalSize/2, goalSize);
-  fill(0, 0, 255);
-  circle(width/1.09-goalSize/2, height/12+goalSize/2, goalSize/1.7);
 }
 
 function drawDiscs() {
