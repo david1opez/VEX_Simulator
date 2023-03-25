@@ -46,7 +46,9 @@ let discs = discsCords.map(([x,y]) => new Disc(x,y, discSize));
 let goals = [
   new Goal("red"),
   new Goal("blue"),
-]
+];
+
+let field = new Field();
 
 function setup() {
   createCanvas(dimensions, dimensions);
@@ -54,49 +56,11 @@ function setup() {
 }
 
 function draw() {
-  drawField();
-
   frameRate(60);
   
+  field.draw();
   robot.handleInput();
   goals.map((goal) => goal.draw());
-}
-
-function drawField() {
-  // Tiles
-  for (var x = 0; x < width; x += width / 6) {
-    for (var y = 0; y < height; y += height / 6) {
-      stroke(40);
-      strokeWeight(0.5);
-      fill(60);
-      rect(x, y, width / 6, height / 6);
-    }
-  }
-
-  // Central Lines
-  strokeWeight(3);
-  stroke(255);
-  line(0+(width*0.02), 0, width, height-(width*0.02));
-  line(0, 0+(width*0.02), width-(width*0.02), height);
-
-  // Autonomous Position Lines
-  line(0, width/6, width/13, height/6);
-  line(width/1.5, width, width/1.5, height/1.08);
-  line(width/3, 0, width/3, height/13);
-  line(width/1.08, height/1.2, width, height/1.2);
-  
-  // Goal Red Bottom Bump
-  strokeWeight(5);
-  stroke(255, 0, 0);
-  line(width/6, height/1.48, width/3, height/1.48);
-  line(width/3, height/1.48, width/3, height/1.2);
-
-  // Goal Blue Bottom Bump
-  strokeWeight(5);
-  stroke(0, 0, 255);
-  line(width/1.48, height/6, width/1.48, height/3);
-  line(width/1.48, height/3, width/1.2, height/3);
-
   drawDiscs();
 }
 
