@@ -52,14 +52,7 @@ function draw() {
   frameRate(60);
 
   field.draw();
-
-  discs.map((disc) => {
-    disc.draw();
-    disc.checkRobotCollision(robot.corners);
-    disc.checkDiscsCollision();
-  });
-
+  discs.map((disc) => disc.draw(robot.corners));
   robot.handleInput();
-  
   goals.map((goal) => goal.draw());
 };
