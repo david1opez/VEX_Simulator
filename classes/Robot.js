@@ -20,6 +20,8 @@ class Robot {
         [this.x - this.size/2, this.y - this.size/2],
         [this.x - this.size/2, this.y + this.size/2]
       ];
+      this.brain = new NeuralNetwork(63, 80, 7); // Neural network of the robot
+      this.score = 0; // Score of the robot
     }
 
     draw() {
@@ -30,6 +32,11 @@ class Robot {
       rotate(this.angle);
       rectMode(CENTER);
       rect(0, 0, this.size, this.size);
+
+      // draw a gray rectangle at the front of the robot
+      fill(100);
+      rect(14, 0, 10, this.size-8);
+
       pop();
     }
 
@@ -49,6 +56,11 @@ class Robot {
       }
       else {
         this.stopTurn();
+      }
+
+      // while shift is pressed activate the robot's intaker
+      if(keyIsDown(SHIFT)) {
+        this.intake(discs);
       }
     
       this.move(discs);
@@ -149,24 +161,88 @@ class Robot {
         if(disc.checkRobotCollision(this.corners)) {
           if(disc.collidingWalls[0] == 1) { // Disc is colliding with the left wall
             this.x = disc.x + disc.size/2 + this.size/2;
-            this.vx = 0;
+            // this.vx = 0;
           }
 
           if(disc.collidingWalls[1] == 1) { // Disc is colliding with the top wall
             this.y = disc.y + disc.size/2 + this.size/2;
-            this.vx = 0;
+            // this.vx = 0;
           }
 
           if(disc.collidingWalls[2] == 1) { // Disc is colliding with the right wall
             this.x = disc.x - disc.size/2 - this.size/2;
-            this.vx = 0;
+            // this.vx = 0;
           }
 
           if(disc.collidingWalls[3] == 1) { // Disc is colliding with the bottom wall
             this.y = disc.y - disc.size/2 - this.size/2;
-            this.vx = 0;
+            // this.vx = 0;
           }
         }
       })
+    }
+
+    checkDiscIntakeCollision(disc) {
+      let frontOfRobot = rotatePoint(this.x + 14, this.y, this.angle, this.x, this.y);
+      let distance = dist(frontOfRobot[0], frontOfRobot[1], disc.x, disc.y);
+      return distance < this.size/2 + disc.size/2;
+    }
+
+    intake(discs) {
+      // if the disc is touching the front of the robot, add it to the robot's inventory
+      discs.map((disc) => {
+        if (this.checkDiscIntakeCollision(disc)) {
+          disc.x = this.x;
+          disc.y = this.y;
+          disc.vx = 0;
+          disc.vy = 0;
+          disc.ax = 0;
+          disc.ay = 0;
+        }
+      })
+    }
+
+    think(discs) {
+      let inputs = [
+        this.x,
+        this.y,
+        this.angle,
+      ];
+
+      discs.map((disc) => {
+        inputs.push(disc.x);
+        inputs.push(disc.y);
+      })
+
+      console.log(inputs)
+
+      let output = this.brain.predict(inputs); // [forwards, backwards, left, right, stop, intake, shooting]
+
+      if(output[0] > 0.6) {
+        this.driveForwards();
+      }
+
+      if(output[1] > 0.6) {
+        this.driveBackwards();
+      }
+
+      if(output[2] > 0.6) {
+        this.turnLeft();
+      }
+
+      if(output[3] > 0.6) {
+        this.turnRight();
+      }
+
+      if(output[4] > 0.6) {
+        this.stopDrive();
+        this.stopTurn();
+      }
+
+      if(output[5] > 0.6) {
+        this.intake(discs);
+      }
+
+      this.move(discs);
     }
   }

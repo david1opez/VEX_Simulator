@@ -35,7 +35,15 @@ let discsCords = [
   [365/1.2-16.5/2, 365/2.9+16.5/2],
 ];
 
+let population = 25;
+
 let robot = new Robot(18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1);
+
+let robots = [];
+
+for (let i = 0; i < population; i++) {
+  robots.push(new Robot(18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
+}
 
 let discs = discsCords.map(([x,y]) => new Disc(x,y, 16.5));
 
@@ -53,6 +61,12 @@ function draw() {
 
   field.draw();
   discs.map((disc) => disc.draw(robot.corners));
-  robot.handleInput(discs);
+  // robot.handleInput(discs);
+  // robot.think(discs);
+
+  robots.map((robot) => {
+    robot.handleInput(discs);
+    robot.think(discs);
+  });
   goals.map((goal) => goal.draw());
 };
