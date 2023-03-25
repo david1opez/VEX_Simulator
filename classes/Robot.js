@@ -54,7 +54,7 @@ class Robot {
       this.move(discs);
     }
 
-    move() {
+    move(discs) {
       this.vx += this.ax;
       this.vt += this.at;
     
