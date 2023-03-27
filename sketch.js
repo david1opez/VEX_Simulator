@@ -1,3 +1,26 @@
+let mode = "autonomous"; // "autonomous" || "programming skills" || "driving" || "competition"
+let population = 15;
+let mutationRate = 0.1;
+let hiddenLayers = 1;
+let drawRobots = true;
+let drawDiscs = true;
+let drawGoals = true;
+let drawField = true;
+let maxTime = 500;
+let inputs = [];
+let rewards = [];
+let punishments = [];
+
+let bestRobot = null;
+let topScore = 0;
+
+let generation = 1;
+
+let robots = [];
+let prevRobots = [];
+
+let timer = 0;
+
 let discsCords = [
   [365/12, 365/12],
   [365/6, 365/6],
@@ -35,20 +58,11 @@ let discsCords = [
   [365/1.2-16.5/2, 365/2.9+16.5/2],
 ];
 
-let generation = 1;
-
-let population = 15;
-
-let robots = [];
-let prevRobots = [];
-
-let timer = 0;
+let discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
 
 for (let i = 0; i < population; i++) {
   robots.push(new Robot(true, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
 }
-
-let discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
 
 let goals = [new Goal("red"), new Goal("blue")];
 
@@ -66,18 +80,17 @@ function draw() {
 
   timer++;
 
-  if(robots.every((robot) => robot.dead) || timer >= 500) {
+  if(robots.every((robot) => robot.dead) || timer >= maxTime) {
     timer = 0;
 
     prevRobots = robots;
     robots = [];
 
     nextGeneration();
-    generation++;
 
+    generation++;
     document.getElementById("generation").innerHTML = `Generation: ${generation}`;
 
-    // reset discs
     discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
   }
 
