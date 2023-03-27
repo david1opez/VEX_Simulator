@@ -187,6 +187,9 @@ class Robot {
 
       this.x = constrain(this.x, offset.x[0], offset.x[1]);
       this.y = constrain(this.y, offset.y[0], offset.y[1]);
+
+      if(this.x == offset.x[0] || this.x == offset.x[1] || this.y == offset.y[0] || this.y == offset.y[1]) {
+      }
     }
 
     checkDiscCollisions(discs) {
@@ -220,8 +223,6 @@ class Robot {
       let distance = dist(frontOfRobot[0], frontOfRobot[1], disc.x, disc.y);
 
       let intakeCollision = distance < this.size/2 + disc.size/2;
-      
-      if(intakeCollision) this.score += 10;
 
       return intakeCollision;
     }
@@ -241,7 +242,6 @@ class Robot {
         let intersect = linesIntersect(line, centralLine);
 
         if (intersect) {
-          this.score -= 10;
           this.dead = true
         };
       }
@@ -321,7 +321,6 @@ class Robot {
         this.timeOnSameSpot++;
       } else {
         this.timeOnSameSpot = 0;
-        this.score += 1;
       }
 
       this.prevX = this.x;
