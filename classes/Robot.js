@@ -1,8 +1,10 @@
 class Robot {
-    constructor(x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed) {
+    constructor(autonomous, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed, brain) {
       this.size = 38; // Size of the robot
       this.x = x; // X position
       this.y = y; // Y position
+      this.prevX = x; // Previous X position
+      this.prevY = y; // Previous Y position
       this.angle = angle;
       this.ax = 0; // Acceleration
       this.at = 0; // Turn acceleration
@@ -20,8 +22,13 @@ class Robot {
         [this.x - this.size/2, this.y - this.size/2],
         [this.x - this.size/2, this.y + this.size/2]
       ];
-      this.brain = new NeuralNetwork(63, 80, 7); // Neural network of the robot
+      this.discs = 2; // Number of discs the robot has
+      this.autonomous = autonomous;
+      this.dead = false; // If the robot has crossed the central line
+      this.brain = brain ? brain.copy() : new NeuralNetwork(70, 560, 8); // Neural network of the robot
       this.score = 0; // Score of the robot
+      this.timeInSameSpot = 0;
+      this.fitness = 0;
     }
 
     draw() {
@@ -35,23 +42,28 @@ class Robot {
 
       // draw a gray rectangle at the front of the robot
       fill(100);
-      rect(14, 0, 10, this.size-8);
+      rect(16, 0, 5, this.size-8);
 
       pop();
     }
 
-    handleInput(discs) {
-      if (keyIsDown(UP_ARROW)) {
+    handleInput(discs, controls) {
+      let UP = controls == "WASD" ? 87 : UP_ARROW;
+      let DOWN = controls == "WASD" ? 83 : DOWN_ARROW;
+      let LEFT = controls == "WASD" ? 65 : LEFT_ARROW;
+      let RIGHT = controls == "WASD" ? 68 : RIGHT_ARROW;
+
+      if (keyIsDown(UP)) {
         this.driveForwards();
-      } else if (keyIsDown(DOWN_ARROW)) {
+      } else if (keyIsDown(DOWN)) {
         this.driveBackwards();
       } else {
         this.stopDrive();
       }
     
-      if(keyIsDown(LEFT_ARROW)) {
+      if(keyIsDown(LEFT)) {
         this.turnLeft();
-      } else if (keyIsDown(RIGHT_ARROW)) {
+      } else if (keyIsDown(RIGHT)) {
         this.turnRight();
       }
       else {
@@ -67,14 +79,16 @@ class Robot {
     }
 
     move(discs) {
+      if(this.dead) return;
+
       this.vx += this.ax;
       this.vt += this.at;
     
       this.vx *= this.friction;
       this.vt *= this.turnFriction;
     
-      this.vx = constrain(this.vx, -this.maxSpeed, robot.maxSpeed);
-      this.vt = constrain(this.vt, -this.maxTurnSpeed, robot.maxTurnSpeed);
+      this.vx = constrain(this.vx, -this.maxSpeed, this.maxSpeed);
+      this.vt = constrain(this.vt, -this.maxTurnSpeed, this.maxTurnSpeed);
     
       this.angle += this.vt;
     
@@ -84,6 +98,8 @@ class Robot {
       this.updateCornerCoords();
       this.checkWallCollisions();
       this.checkDiscCollisions(discs);
+      this.checkLineCross();
+      this.countTimeOnSameSpot();
       this.draw();
     }
   
@@ -109,6 +125,23 @@ class Robot {
   
     stopTurn() {
       this.at = 0;
+    }
+
+    intake(discs) {
+      if(discs.length >= 3) return;
+
+      discs.map((disc, index) => {
+        if (this.checkDiscIntakeCollision(disc)) {
+          this.discs++;
+          this.score += 10;
+          return discs.splice(index, 1);
+        }
+      })
+    }
+
+    shoot() {
+      if(this.discs <= 0) return;
+      this.discs--;
     }
 
     updateCornerCoords() {
@@ -185,64 +218,121 @@ class Robot {
     checkDiscIntakeCollision(disc) {
       let frontOfRobot = rotatePoint(this.x + 14, this.y, this.angle, this.x, this.y);
       let distance = dist(frontOfRobot[0], frontOfRobot[1], disc.x, disc.y);
-      return distance < this.size/2 + disc.size/2;
+
+      let intakeCollision = distance < this.size/2 + disc.size/2;
+      
+      if(intakeCollision) this.score += 10;
+
+      return intakeCollision;
     }
 
-    intake(discs) {
-      // if the disc is touching the front of the robot, add it to the robot's inventory
-      discs.map((disc) => {
-        if (this.checkDiscIntakeCollision(disc)) {
-          disc.x = this.x;
-          disc.y = this.y;
-          disc.vx = 0;
-          disc.vy = 0;
-          disc.ax = 0;
-          disc.ay = 0;
-        }
-      })
+    checkLineCross() {
+      let lines = [
+        [this.corners[0][0], this.corners[0][1], this.corners[1][0], this.corners[1][1]],
+        [this.corners[1][0], this.corners[1][1], this.corners[2][0], this.corners[2][1]],
+        [this.corners[2][0], this.corners[2][1], this.corners[3][0], this.corners[3][1]],
+        [this.corners[3][0], this.corners[3][1], this.corners[0][0], this.corners[0][1]]
+      ]
+
+      let centralLine = [7.3, 0, 365, 357.7];
+
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        let intersect = linesIntersect(line, centralLine);
+
+        if (intersect) {
+          this.score -= 10;
+          this.dead = true
+        };
+      }
     }
 
     think(discs) {
       let inputs = [
-        this.x,
-        this.y,
-        this.angle,
+        this.x/365,
+        this.y/365,
+        this.prevX/365,
+        this.prevY/365,
+        this.angle/365,
+        this.discs/3
       ];
 
-      discs.map((disc) => {
-        inputs.push(disc.x);
-        inputs.push(disc.y);
-      })
+      for (let i = 0; i < 30; i++) {
+        if(discs[i]) {
+          inputs.push(discs[i].x/365);
+          inputs.push(discs[i].y/365);
+        } else {
+          inputs.push(0);
+          inputs.push(0);
+        }
+      }
 
-      console.log(inputs)
+      let centralLine = [7.3, 0, 365, 357.7];
+
+      centralLine.map((coord) => inputs.push(coord/365));
 
       let output = this.brain.predict(inputs); // [forwards, backwards, left, right, stop, intake, shooting]
 
-      if(output[0] > 0.6) {
+      if(output[0] > 0.5) {
         this.driveForwards();
+        // console.log("forwards")
       }
 
       if(output[1] > 0.6) {
         this.driveBackwards();
+        // console.log("backwards")
       }
 
-      if(output[2] > 0.6) {
+      if(output[2] > 0.5) {
         this.turnLeft();
+        // console.log("turn left")
       }
 
-      if(output[3] > 0.6) {
+      if(output[3] > 0.5) {
         this.turnRight();
+        // console.log("turn right")
       }
 
-      if(output[4] > 0.6) {
+      if(output[4] > 0.5) {
         this.stopDrive();
-        this.stopTurn();
+        // console.log("stop drive")
       }
 
-      if(output[5] > 0.6) {
+      if(output[5] > 0.5) {
+        this.stopTurn();
+        // console.log("stop turn")
+      }
+
+      if(output[6] > 0.7) {
         this.intake(discs);
+        // console.log("intake");
+      }
+
+      if(output[7] > 0.7) {
+        this.shoot();
+        // console.log("shoot");
       }
 
       this.move(discs);
+    }
+
+    countTimeOnSameSpot() {
+      if (this.x === this.prevX && this.y === this.prevY) {
+        this.timeOnSameSpot++;
+      } else {
+        this.timeOnSameSpot = 0;
+        this.score += 1;
+      }
+
+      this.prevX = this.x;
+      this.prevY = this.y;
+
+      if(this.timeOnSameSpot > 100) {
+        this.dead = true;
+      }
+    }
+
+    mutate(rate) {
+      this.brain.mutate(rate);
     }
   }

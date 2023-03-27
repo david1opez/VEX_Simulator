@@ -35,17 +35,20 @@ let discsCords = [
   [365/1.2-16.5/2, 365/2.9+16.5/2],
 ];
 
-let population = 25;
+let generation = 1;
 
-let robot = new Robot(18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1);
+let population = 15;
 
 let robots = [];
+let prevRobots = [];
+
+let timer = 0;
 
 for (let i = 0; i < population; i++) {
-  robots.push(new Robot(18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
+  robots.push(new Robot(true, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
 }
 
-let discs = discsCords.map(([x,y]) => new Disc(x,y, 16.5));
+let discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
 
 let goals = [new Goal("red"), new Goal("blue")];
 
@@ -60,13 +63,29 @@ function draw() {
   frameRate(60);
 
   field.draw();
-  discs.map((disc) => disc.draw(robot.corners));
-  // robot.handleInput(discs);
-  // robot.think(discs);
 
-  robots.map((robot) => {
-    robot.handleInput(discs);
-    robot.think(discs);
+  timer++;
+
+  if(robots.every((robot) => robot.dead) || timer >= 500) {
+    timer = 0;
+
+    prevRobots = robots;
+    robots = [];
+
+    nextGeneration();
+    generation++;
+
+    document.getElementById("generation").innerHTML = `Generation: ${generation}`;
+
+    // reset discs
+    discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
+  }
+
+  robots?.map((robot, index) => {
+    // robot.handleInput(discs[index]);
+    discs[index].map((disc) => disc.draw(robot.corners));
+    robot.think(discs[index]);
   });
+
   goals.map((goal) => goal.draw());
 };

@@ -13,20 +13,27 @@
     }
   </style>
 
+  <body>
+    <h2 id="generation" style="font-family: monospace; color: white">Generation: 1</h2>
+  </body>
+
   <!-- Libraries -->
   <script src="libraries/p5.js"></script>
-  <script src="libraries/nn.js"></script>
   <script src="libraries/matrix.js"></script>
+  <script src="libraries/nn.js"></script>
+  
+
+  <!-- Helper Functions -->
+  <script src="helper_functions/linesIntersect.js"></script>
+  <script src="helper_functions/rotatePoint.js"></script>
+  <script src="helper_functions/nearestPointOnLine.js"></script>
+  <script src="helper_functions/geneticAlgorithm.js"></script>
 
   <!-- Classes -->
   <script src="classes/Field.js"></script>
   <script src="classes/Disc.js"></script>
   <script src="classes/Robot.js"></script>
   <script src="classes/Goal.js"></script>
-
-  <!-- Helper Functions -->
-  <script src="helper_functions/rotatePoint.js"></script>
-  <script src="helper_functions/nearestPointOnLine.js"></script>
 
   <!-- Main Sketch -->
   <script src="sketch.js"></script>

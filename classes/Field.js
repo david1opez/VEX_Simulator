@@ -15,7 +15,7 @@ class Field {
         // Central Lines
         strokeWeight(3);
         stroke(255);
-        line(0+(365*0.02), 0, 365, 365-(365*0.02));
+        line(7.3, 0, 365, 357.7);
         line(0, 0+(365*0.02), 365-(365*0.02), 365);
 
         // Autonomous Position Lines
