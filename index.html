@@ -10,38 +10,360 @@
       padding: 0;
       margin: 0;
       background-color: #1b1b1b;
+      display: flex;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .label {
+      color: white;
+      font-family: monospace;
+      margin-bottom: 5px;
+    }
+
+    .miniLabel {
+      color: white;
+      font-family: monospace;
+      margin-left: 2px;
+      font-size: 0.7rem;
+    }
+
+    .settings {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 50%;
+      height: 100%;
+      margin-left: 400px;
+    }
+
+    .col {
+      flex-direction: column;
+      width: 33%;
+    }
+
+    .inputsListContainer {
+      width: 70%;
+      margin-bottom: 5px;
+      padding: 5px;
+      max-height: 65px;
+      overflow-y: scroll;
+      border: 1px solid white;
+    }
+
+    .inputContainer {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .input {
+      font-family: monospace;
+      color: white;
+      background-color: #1b1b1b;
+      border: 1px solid white;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 35px;
+      height: 17px;
+      margin-top: 3px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    /* The slider */
+    .switch .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #1b1b1b;
+      border: 1px solid white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    .switch .slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 1px;
+      bottom: 2px;
+      background-color: white;
+      -webkit-transition: .4s;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #4a36e0;
+    }
+
+    input:focus + .slider {
+      box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+      -webkit-transform: translateX(18px);
+      -ms-transform: translateX(18px);
+      transform: translateX(18px);
+    }
+
+    .disabled {
+      opacity: 0.6;
+      pointer-events: none;
     }
   </style>
-
-  <body>
-    <h2 id="generation" style="font-family: monospace; color: white">Generation: 1</h2>
-  </body>
-
-  <!-- Libraries -->
-  <script src="libraries/p5.js"></script>
-  <script src="libraries/matrix.js"></script>
-  <script src="libraries/nn.js"></script>
-  
-
-  <!-- Helper Functions -->
-  <script src="helper_functions/linesIntersect.js"></script>
-  <script src="helper_functions/rotatePoint.js"></script>
-  <script src="helper_functions/nearestPointOnLine.js"></script>
-  <script src="helper_functions/geneticAlgorithm.js"></script>
-
-  <!-- Classes -->
-  <script src="classes/Field.js"></script>
-  <script src="classes/Disc.js"></script>
-  <script src="classes/Robot.js"></script>
-  <script src="classes/Goal.js"></script>
-
-  <!-- Main Sketch -->
-  <script src="sketch.js"></script>
 </head>
 
 <body>
-  <main>
-  </main>
+  <h2
+    id="generation"
+    style="font-family: monospace; color: white; position: absolute; top: 50vh"
+  >
+    Generation: 1
+  </h2>
+  <h3
+    id="generation"
+    style="font-family: monospace; color: white; position: absolute; top: 55vh"
+  >
+    Top Score: 0
+  </h3>
+
+  <div class="settings">
+    <div class="col">
+      <h4 class="label">Mode:</h4>
+      <select id="mode" class="input">
+        <option value="autonomous">Autonomous</option>
+        <option value="programming skills">Programming Skills</option>
+        <option value="driving">Driving</option>
+        <option value="competition">Competition</option>
+      </select>
+
+      <h4 class="label">Population:</h4>
+      <input
+        type="number"
+        class="input"
+        id="population"
+        name="population"
+        min="1" max="500" value="10"
+      >
+
+      <h4 class="label">Mutation Rate:</h4>
+      <input
+        type="number"
+        class="input"
+        id="mutationRate"
+        name="mutationRate"
+        min="0" max="0.99" step="0.01" value="0.1"
+      >
+
+      <h4 class="label">Hidden Layers:</h4>
+      <input
+        type="number"
+        class="input"
+        id="hiddenLayers"
+        name="hiddenLayers"
+        min="0" max="500" value="1"
+      >
+
+      <h4 class="label">Maximum Time to Live:</h4>
+      <input
+        type="number"
+        class="input"
+        id="maxTimeToLive"
+        name="maxTimeToLive"
+        min="1" max="100000" value="500"
+      >
+    </div>
+
+    <div class="col">
+      <h4 class="label">Inputs:</h4>
+      <div class="inputsListContainer">
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+      </div>
+
+      <h4 class="label">Rewards:</h4>
+      <div class="inputsListContainer">
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+      </div>
+
+      <h4 class="label">Punishments:</h4>
+      <div class="inputsListContainer">
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+        <div class="inputContainer">
+          <input type="checkbox" class="input" id="input1" checked>
+          <label class="miniLabel" for="input1">Distance to Goal</label>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col">
+      <h4 class="label">Show Robots:</h4>
+      <select id="mode" class="input showRobots">
+        <option value="allRobots">All Robots</option>
+        <option value="topRobots">Top Robots</option>
+        <option value="bestRobots">Best Robot</option>
+        <option value="noneRobots">None</option>
+      </select>
+
+      <div class="topRobotsToShowContainer">
+        <h4 class="label">Top Robots to Show:</h4>
+        <input
+          type="number"
+          class="input"
+          id="hiddenLayers"
+          name="hiddenLayers"
+          min="0" max="400" value="5"
+        >
+      </div>
+
+      <h4 class="label">Show Discs:</h4>
+      <label class="switch">
+        <input type="checkbox" id="showDiscs" checked>
+        <span class="slider round"></span>
+      </label>
+
+      <h4 class="label">Show Goals:</h4>
+      <label class="switch">
+        <input type="checkbox" id="showGoals" checked>
+        <span class="slider round"></span>
+      </label>
+
+      <h4 class="label">Show Field:</h4>
+      <label class="switch">
+        <input type="checkbox" id="showField" checked>
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
 </body>
 
+<script>
+  const showRobots = document.querySelector(".showRobots");
+  const topRobotsToShowContainer = document.querySelector(".topRobotsToShowContainer");
+
+  showRobots.addEventListener("change", () => {
+    if (showRobots.value === "topRobots") {
+      topRobotsToShowContainer.style.display = "block";
+    } else {
+      topRobotsToShowContainer.style.display = "none";
+    }
+  });
+</script>
+
+<!-- Libraries -->
+<script src="libraries/p5.js"></script>
+<script src="libraries/matrix.js"></script>
+<script src="libraries/nn.js"></script>
+
+
+<!-- Helper Functions -->
+<script src="helper_functions/linesIntersect.js"></script>
+<script src="helper_functions/rotatePoint.js"></script>
+<script src="helper_functions/nearestPointOnLine.js"></script>
+<script src="helper_functions/geneticAlgorithm.js"></script>
+
+<!-- Classes -->
+<script src="classes/Field.js"></script>
+<script src="classes/Disc.js"></script>
+<script src="classes/Robot.js"></script>
+<script src="classes/Goal.js"></script>
+
+<!-- Main Sketch -->
+<script src="sketch.js"></script>
 </html>
