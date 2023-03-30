@@ -31,6 +31,8 @@ class Robot {
       this.timeInSameSpot = 0;
       this.fitness = 0;
       this.lastShot = 0;
+      this.eraseCounter = 10000000;
+      this.numberOfDiscs = 30;
     }
 
     draw() {
@@ -148,13 +150,22 @@ class Robot {
 
     shoot() {
       let now = Date.now();
-      console.log(now, this.lastShot, this.discs);
       if(this.discs <= 0 || now - this.lastShot < 2000) return;
       let power = 100;
       let newX = this.x + power * cos(this.angle);
       let newY = this.y + power * sin(this.angle);
-
-      discs[this.id].push(new Disc(newX, newY, 16.5));
+      this.numberOfDiscs += 1;
+      
+      let distance = Math.sqrt(Math.pow(newX - 48.66, 2) + Math.pow(newY - 316.61, 2));
+      if (distance <= 26.5) 
+      {
+        discs[this.id].push(new Disc(newX, newY, 16.5, color = [102, 255, 0],true));
+        setTimeout(() => {
+          delete discs[this.id][this.numberOfDiscs-1];
+        }, 5000);
+      }
+      else
+        discs[this.id].push(new Disc(newX, newY, 16.5));
 
       this.discs--;
       this.lastShot = now;
@@ -210,7 +221,7 @@ class Robot {
 
     checkDiscCollisions(discs) {
       discs.map((disc) => {
-        if(disc.checkRobotCollision(this.corners)) {
+        if(disc.checkRobotCollision(this.corners) && disc.flying == true) {
           if(disc.collidingWalls[0] == 1) { // Disc is colliding with the left wall
             this.x = disc.x + disc.size/2 + this.size/2;
             // this.vx = 0;
