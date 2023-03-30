@@ -31,8 +31,8 @@ class Robot {
       this.timeInSameSpot = 0;
       this.fitness = 0;
       this.lastShot = 0;
-      this.eraseCounter = 10000000;
       this.numberOfDiscs = 30;
+      this.flyingScore = 0;
     }
 
     draw() {
@@ -85,6 +85,7 @@ class Robot {
       }
     
       this.move(discs);
+      this.calculateScore(discs);
     }
 
     move(discs) {
@@ -163,6 +164,7 @@ class Robot {
         setTimeout(() => {
           delete discs[this.id][this.numberOfDiscs-1];
         }, 5000);
+        this.flyingScore += 5;
       }
       else
         discs[this.id].push(new Disc(newX, newY, 16.5));
@@ -273,6 +275,25 @@ class Robot {
         };
       }
     }
+
+    calculateScore(discs) {
+      let groundScore = 0;
+      
+      discs.map((disc) => {
+        if(disc.flying == false && disc.x < 365/3 && disc.y > 365/1.48 ) {
+          groundScore += 1;
+        }
+      });
+
+      this.score = -groundScore + this.flyingScore;
+      let textScore = document.getElementById("currentScore").textContent;
+      textScore = textScore.substring(19);
+      console.log(parseInt(textScore))
+      if (parseInt(textScore) < this.score) {
+        document.getElementById("currentScore").innerHTML = "Current Top Score: " + this.score;
+      }
+    }
+
 
     think(discs) {
       let inputs = [

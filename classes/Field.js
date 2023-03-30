@@ -29,11 +29,16 @@ class Field {
         stroke(255, 0, 0);
         line(365/6, 365/1.48, 365/3, 365/1.48);
         line(365/3, 365/1.48, 365/3, 365/1.2);
+        //red corner
+        
+        
 
         // Goal Blue Bottom Bump
         strokeWeight(5);
         stroke(0, 0, 255);
         line(365/1.48, 365/6, 365/1.48, 365/3);
         line(365/1.48, 365/3, 365/1.2, 365/3);
+
+
     }
 }
