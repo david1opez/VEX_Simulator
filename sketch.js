@@ -1,5 +1,5 @@
 let mode = "autonomous"; // "autonomous" || "programming skills" || "driving" || "competition"
-let population = 15;
+let population = 1;
 let mutationRate = 0.1;
 let hiddenLayers = 1;
 let drawRobots = true;
@@ -58,11 +58,12 @@ let discsCords = [
   [365/1.2-16.5/2, 365/2.9+16.5/2],
 ];
 
+for (let i = 0; i < population; i++) {
+  robots.push(new Robot(i, true, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
+}
+
 let discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
 
-for (let i = 0; i < population; i++) {
-  robots.push(new Robot(true, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
-}
 
 let goals = [new Goal("red"), new Goal("blue")];
 
@@ -95,9 +96,9 @@ function draw() {
   }
 
   robots?.map((robot, index) => {
-    // robot.handleInput(discs[index]);
+    robot.handleInput(discs[index]);
     discs[index].map((disc) => disc.draw(robot.corners));
-    robot.think(discs[index]);
+    //robot.think(discs[index]);
   });
 
   goals.map((goal) => goal.draw());

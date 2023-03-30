@@ -1,13 +1,13 @@
 function nextGeneration() {
     calculateFitness();
     for (let i = 0; i < population; i++) {
-        robots[i] = pickOne();
+        robots[i] = pickOne(i);
     }
 
     prevRobots = [];
 }
 
-function pickOne() {
+function pickOne(i) {
     let index = 0;
     let r = random(1);
 
@@ -20,7 +20,7 @@ function pickOne() {
 
     let robot = prevRobots[index];
 
-    let child = new Robot(true, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1, robot.brain);
+    let child = new Robot(i, true, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1, robot.brain);
     child.mutate(0.1);
 
     return child;

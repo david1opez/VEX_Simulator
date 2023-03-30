@@ -1,5 +1,6 @@
 class Robot {
-    constructor(autonomous, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed, brain) {
+    constructor(id, autonomous, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed, brain) {
+      this.id = id;
       this.size = 38; // Size of the robot
       this.x = x; // X position
       this.y = y; // Y position
@@ -29,6 +30,7 @@ class Robot {
       this.score = 0; // Score of the robot
       this.timeInSameSpot = 0;
       this.fitness = 0;
+      this.lastShot = 0;
     }
 
     draw() {
@@ -52,6 +54,11 @@ class Robot {
       let DOWN = controls == "WASD" ? 83 : DOWN_ARROW;
       let LEFT = controls == "WASD" ? 65 : LEFT_ARROW;
       let RIGHT = controls == "WASD" ? 68 : RIGHT_ARROW;
+      let L = 76;
+      
+      if (keyIsDown(L)) {
+        this.shoot();
+      }
 
       if (keyIsDown(UP)) {
         this.driveForwards();
@@ -140,8 +147,17 @@ class Robot {
     }
 
     shoot() {
-      if(this.discs <= 0) return;
+      let now = Date.now();
+      console.log(now, this.lastShot, this.discs);
+      if(this.discs <= 0 || now - this.lastShot < 2000) return;
+      let power = 100;
+      let newX = this.x + power * cos(this.angle);
+      let newY = this.y + power * sin(this.angle);
+
+      discs[this.id].push(new Disc(newX, newY, 16.5));
+
       this.discs--;
+      this.lastShot = now;
     }
 
     updateCornerCoords() {
