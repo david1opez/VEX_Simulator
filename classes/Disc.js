@@ -1,12 +1,13 @@
 class Disc {
-    constructor(x, y, size, color=[255, 215, 0]) {
+    constructor(x, y, size, color=[255, 215, 0], flyingg=false) {
+      this.flying = flyingg;
       this.x = x;
       this.y = y;
       this.angle = 0;
       this.size = size;
       this.color = color;
-      this.flying = false;
       this.collidingWalls = [0,0,0,0]
+
     }
   
     draw(robotCorners) {
