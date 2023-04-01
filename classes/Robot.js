@@ -286,7 +286,7 @@ class Robot {
       });
 
       this.score = -groundScore + this.flyingScore;
-      let textScore = document.getElementById("currentScore").textContent;
+      let textScore = document.querySelector(".currentScore").textContent;
       textScore = textScore.substring(19);
       if (parseInt(textScore) < this.score) {
         document.getElementById("currentScore").innerHTML = "Current Top Score: " + this.score;
