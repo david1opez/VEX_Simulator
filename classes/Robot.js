@@ -1,5 +1,5 @@
 class Robot {
-    constructor(id, autonomous, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed, brain) {
+    constructor(id, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed, brain) {
       this.id = id;
       this.size = 38; // Size of the robot
       this.x = x; // X position
@@ -24,9 +24,8 @@ class Robot {
         [this.x - this.size/2, this.y + this.size/2]
       ];
       this.discs = 2; // Number of discs the robot has
-      this.autonomous = autonomous;
       this.dead = false; // If the robot has crossed the central line
-      this.brain = brain ? brain.copy() : new NeuralNetwork(70, 560, 8); // Neural network of the robot
+      this.brain = brain ? brain.copy() : new NeuralNetwork(70, hiddenLayers, 8); // Neural network of the robot
       this.score = 0; // Score of the robot
       this.timeInSameSpot = 0;
       this.fitness = 0;
@@ -45,7 +44,7 @@ class Robot {
       rect(0, 0, this.size, this.size);
 
       // draw a gray rectangle at the front of the robot
-      fill(100);
+      fill(0);
       rect(16, 0, 5, this.size-8);
 
       pop();
@@ -56,33 +55,20 @@ class Robot {
       let DOWN = controls == "WASD" ? 83 : DOWN_ARROW;
       let LEFT = controls == "WASD" ? 65 : LEFT_ARROW;
       let RIGHT = controls == "WASD" ? 68 : RIGHT_ARROW;
-      let L = 76;
-      
-      if (keyIsDown(L)) {
-        this.shoot();
-      }
+      let SHOOT = controls == "WASD" ? 32 : 76;
+      let INTAKE = controls == "WASD" ? 16 : 73;
 
-      if (keyIsDown(UP)) {
-        this.driveForwards();
-      } else if (keyIsDown(DOWN)) {
-        this.driveBackwards();
-      } else {
-        this.stopDrive();
-      }
+      if (keyIsDown(UP)) this.driveForwards();
+      else if (keyIsDown(DOWN)) this.driveBackwards();
+      else this.stopDrive();
     
-      if(keyIsDown(LEFT)) {
-        this.turnLeft();
-      } else if (keyIsDown(RIGHT)) {
-        this.turnRight();
-      }
-      else {
-        this.stopTurn();
-      }
+      if(keyIsDown(LEFT)) this.turnLeft();
+      else if (keyIsDown(RIGHT)) this.turnRight();
+      else this.stopTurn();
 
-      // while shift is pressed activate the robot's intaker
-      if(keyIsDown(SHIFT)) {
-        this.intake(discs);
-      }
+      if (keyIsDown(SHOOT)) this.shoot();
+
+      if(keyIsDown(INTAKE)) this.intake(discs);
     
       this.move(discs);
       this.calculateScore(discs);
@@ -108,7 +94,7 @@ class Robot {
       this.updateCornerCoords();
       this.checkWallCollisions();
       this.checkDiscCollisions(discs);
-      this.checkLineCross();
+      if(mode === "autonomous") this.checkLineCross();
       this.countTimeOnSameSpot();
       this.draw();
     }
@@ -151,7 +137,9 @@ class Robot {
 
     shoot() {
       let now = Date.now();
+
       if(this.discs <= 0 || now - this.lastShot < 2000) return;
+
       let power = 100;
       let newX = this.x + power * cos(this.angle);
       let newY = this.y + power * sin(this.angle);
@@ -222,7 +210,7 @@ class Robot {
     }
 
     checkDiscCollisions(discs) {
-      discs.map((disc) => {
+      discs.map((disc, index) => {
         if(disc.checkRobotCollision(this.corners) && disc.flying == true) {
           if(disc.collidingWalls[0] == 1) { // Disc is colliding with the left wall
             this.x = disc.x + disc.size/2 + this.size/2;
@@ -322,6 +310,7 @@ class Robot {
 
       if(output[0] > 0.5) {
         this.driveForwards();
+        this.score += 1;
         // console.log("forwards")
       }
 

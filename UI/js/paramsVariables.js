@@ -29,6 +29,7 @@ selectInputs.mode.addEventListener("change", (event) => {
     mode = event.target.value;
     ShowHideTitles();
     ShowHideAIParams();
+    initialize();
 });
 
 ShowHideTopRobotsToShow();
@@ -49,6 +50,7 @@ numberInputs.mutationRate.addEventListener("change", (event) => {
 
 numberInputs.hiddenLayers.addEventListener("change", (event) => {
     hiddenLayers = event.target.value;
+    initialize();
 });
 
 numberInputs.timeToLive.addEventListener("change", (event) => {

@@ -1,6 +1,6 @@
 class Disc {
-    constructor(x, y, size, color=[255, 215, 0], flyingg=false) {
-      this.flying = flyingg;
+    constructor(x, y, size, color=[255, 215, 0], flying=false) {
+      this.flying = flying;
       this.x = x;
       this.y = y;
       this.angle = 0;

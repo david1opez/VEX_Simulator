@@ -20,8 +20,8 @@ function pickOne(i) {
 
     let robot = prevRobots[index];
 
-    let child = new Robot(i, true, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1, robot.brain);
-    child.mutate(0.1);
+    let child = new Robot(i, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1, robot.brain);
+    child.mutate(mutationRate);
 
     return child;
 }
@@ -36,4 +36,18 @@ function calculateFitness() {
     for (let r of prevRobots) {
         r.fitness = r.score / sum;
     }
+
+    getTopScore();
+}
+
+function getTopScore() {
+    let top = 0;
+
+    for (let r of prevRobots) {
+        if (r.score > top) {
+            top = r.score;
+        }
+    }
+
+    titles.topScore.innerHTML = "Top Score: " + top;
 }

@@ -1,7 +1,10 @@
+let timer = 0;
+let FPSUpdateTimer = 0;
+let lastFPSUpdate = 0;
+
 let robots = [];
 let prevRobots = [];
-
-let timer = 0;
+let discs = [];
 
 let discsCords = [
   [365/12, 365/12],
@@ -40,20 +43,45 @@ let discsCords = [
   [365/1.2-16.5/2, 365/2.9+16.5/2],
 ];
 
-for (let i = 0; i < population; i++) {
-  robots.push(new Robot(i, true, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
-}
-
-let discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
-
-
 let goals = [new Goal("red"), new Goal("blue")];
 
 let field = new Field();
 
+function initialize() {
+  robots = [];
+  prevRobots = [];
+
+  timer = 0;
+
+  if(mode === "competition") population = 2;
+  else if(mode === "driving") population = 1;
+
+  for (let i = 0; i < population; i++) {
+    robots.push(new Robot(i, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
+  }
+
+  discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
+}
+
 function setup() {
   createCanvas(365, 365);
   background(0);
+
+  initialize();
+};
+
+function drawFPS() {
+  FPSUpdateTimer++;
+
+  if(FPSUpdateTimer >= 10) {
+    FPSUpdateTimer = 0;
+    lastFPSUpdate = Math.round(frameRate());
+  }
+
+  fill(255);
+  noStroke();
+  textSize(12);
+  text(`FPS: ${lastFPSUpdate}`, 157, 355);
 }
 
 function draw() {
@@ -61,6 +89,29 @@ function draw() {
 
   field.draw();
 
+  drawFPS();
+
+  if(mode === "competition") competitionControl();
+  else if(mode === "driving") drivingControl();
+  else if(mode === "autonomous" || mode === "programming skills") autonomousControl();
+
+  goals.map((goal) => goal.draw());
+};
+
+function competitionControl() {
+  robots[0].handleInput(discs[0]);
+  discs[0].map((disc) => disc.draw(robots[0].corners));
+
+  robots[1].handleInput(discs[1], "WASD");
+  discs[1].map((disc) => disc.draw(robots[1].corners));
+};
+
+function drivingControl() {
+  robots[0].handleInput(discs[0]);
+  discs[0].map((disc) => disc.draw(robots[0].corners));
+};
+
+function autonomousControl() {
   timer++;
 
   if(robots.every((robot) => robot.dead) || timer >= maxTime) {
@@ -78,10 +129,7 @@ function draw() {
   }
 
   robots?.map((robot, index) => {
-    robot.handleInput(discs[index]);
     discs[index].map((disc) => disc.draw(robot.corners));
-    //robot.think(discs[index]);
+    robot.think(discs[index]);
   });
-
-  goals.map((goal) => goal.draw());
 };
