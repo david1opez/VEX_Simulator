@@ -57,7 +57,7 @@ canvas {
   margin-left: 430px;
 }
 
-.col {
+.col1, .col2, .col3 {
   flex-direction: column;
   width: 33%;
 }
@@ -104,4 +104,59 @@ canvas {
   font-family: monospace;
   margin-left: 2px;
   font-size: 0.7rem;
+}
+
+/* Toggle Input */
+
+.toggleInputContainer {
+  position: relative;
+  display: inline-block;
+  width: 35px;
+  height: 17px;
+  margin-top: 3px;
+}
+
+.toggleInputContainer .toggleInput {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleInputContainer .roundToggle {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 1px;
+  right: 0;
+  bottom: 0;
+  background-color: #1b1b1b;
+  border: 1px solid white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.toggleInputContainer .roundToggle:before {
+  position: absolute;
+  content: "";
+  height: 11px;
+  width: 12px;
+  left: 1px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.toggleInputContainer .toggleInput:checked + .roundToggle {
+  background-color: #2196F3;
+}
+
+.toggleInputContainer .toggleInput:focus + .roundToggle {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+.toggleInputContainer .toggleInput:checked + .roundToggle:before {
+  -webkit-transform: translateX(18px);
+  -ms-transform: translateX(18px);
+  transform: translateX(18px);
 }

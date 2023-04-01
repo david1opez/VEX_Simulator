@@ -7,6 +7,8 @@ class Goal{
     }
 
     draw() {
+        if(!drawGoals) return;
+
         stroke(255);
         strokeWeight(5);
 

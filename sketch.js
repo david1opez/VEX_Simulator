@@ -1,21 +1,3 @@
-let mode = "autonomous"; // "autonomous" || "programming skills" || "driving" || "competition"
-let population = 1;
-let mutationRate = 0.1;
-let hiddenLayers = 1;
-let drawRobots = true;
-let drawDiscs = true;
-let drawGoals = true;
-let drawField = true;
-let maxTime = 50000;
-let inputs = [];
-let rewards = [];
-let punishments = [];
-
-let bestRobot = null;
-let topScore = 0;
-
-let generation = 1;
-
 let robots = [];
 let prevRobots = [];
 
@@ -71,7 +53,7 @@ let field = new Field();
 
 function setup() {
   createCanvas(365, 365);
-  background(255);
+  background(0);
 }
 
 function draw() {
@@ -90,7 +72,7 @@ function draw() {
     nextGeneration();
 
     generation++;
-    document.getElementById("generation").innerHTML = `Generation: ${generation}`;
+    document.querySelector(".generation").innerHTML = `Generation: ${generation}`;
 
     discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
   }

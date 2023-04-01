@@ -11,9 +11,11 @@ class Disc {
     }
   
     draw(robotCorners) {
-      strokeWeight(0);
-      fill(this.color[0], this.color[1], this.color[2]);
-      circle(this.x, this.y, this.size);
+      if(drawDiscs) {
+        strokeWeight(0);
+        fill(this.color[0], this.color[1], this.color[2]);
+        circle(this.x, this.y, this.size);
+      }
 
       this.checkRobotCollision(robotCorners);
       this.checkDiscsCollision();
