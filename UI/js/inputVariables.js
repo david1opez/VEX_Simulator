@@ -14,13 +14,11 @@ const selectInputs = {
 const numberInputs = {
     population: document.querySelector(".numberInput.population"),
     mutationRate: document.querySelector(".numberInput.mutationRate"),
-    hiddenLayers: document.querySelector(".numberInput.hiddenLayers"),
     timeToLive: document.querySelector(".numberInput.timeToLive"),
     topRobotsToShow: document.querySelector(".numberInput.topRobotsToShow"),
 }
 
 const multiselectInputs = {
-    neuralNetworkInputs: document.querySelector(".multiselectInput.neuralNetworkInputs"),
     rewards: document.querySelector(".multiselectInput.rewards"),
     punishments: document.querySelector(".multiselectInput.punishments"),
 }
@@ -32,9 +30,6 @@ const toggleInputs = {
 }
 
 const multiSelectOptions = {
-    neuralNetworkInputs: {
-        distanceToGoal: document.querySelector(".checkboxInput.neuralNetworkInputs.distanceToGoal"),
-    },
     rewards: {
         distanceToGoal: document.querySelector(".checkboxInput.rewards.distanceToGoal"),
     },
@@ -48,10 +43,8 @@ const inputLabels = {
     showRobots: document.querySelector(".inputLabel.topRobotsToShow"),
     population: document.querySelector(".inputLabel.population"),
     mutationRate: document.querySelector(".inputLabel.mutationRate"),
-    hiddenLayers: document.querySelector(".inputLabel.hiddenLayers"),
     timeToLive: document.querySelector(".inputLabel.timeToLive"),
     topRobotsToShow: document.querySelector(".inputLabel.topRobotsToShow"),
-    neuralNetworkInputs: document.querySelector(".inputLabel.neuralNetworkInputs"),
     rewards: document.querySelector(".inputLabel.rewards"),
     punishments: document.querySelector(".inputLabel.punishments"),
 }

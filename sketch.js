@@ -56,9 +56,16 @@ function initialize() {
   if(mode === "competition") population = 2;
   else if(mode === "driving") population = 1;
 
-  for (let i = 0; i < population; i++) {
-    robots.push(new Robot(i, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
-  }
+  // if(mode === "competition") {
+  //   robots.push(new Robot(0, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1, "red"));
+  //   robots.push(new Robot(1, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1, "blue"));
+  // }
+
+  // else {
+    for (let i = 0; i < population; i++) {
+      robots.push(new Robot(i, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
+    }
+  // }
 
   discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
 }

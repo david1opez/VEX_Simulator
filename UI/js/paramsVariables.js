@@ -2,10 +2,8 @@ let mode = selectInputs.mode.value;
 
 let population = numberInputs.population.value;
 let mutationRate = numberInputs.mutationRate.value;
-let hiddenLayers = numberInputs.hiddenLayers.value;
 let maxTime = numberInputs.timeToLive.value;
 
-let neuralNetworkinputs = [];
 let rewards = [];
 let punishments = [];
 
@@ -48,11 +46,6 @@ numberInputs.mutationRate.addEventListener("change", (event) => {
     mutationRate = event.target.value;
 });
 
-numberInputs.hiddenLayers.addEventListener("change", (event) => {
-    hiddenLayers = event.target.value;
-    initialize();
-});
-
 numberInputs.timeToLive.addEventListener("change", (event) => {
     maxTime = event.target.value;
 });
@@ -63,17 +56,13 @@ for (let input in multiSelectOptions) {
     for (let option in multiSelectOptions[input]) {
         multiSelectOptions[input][option].addEventListener("change", (event) => {
             if (event.target.checked) {
-                if (input == "neuralNetworkInputs") {
-                    neuralNetworkinputs.push(option);
-                } else if (input == "rewards") {
+                if (input == "rewards") {
                     rewards.push(option);
                 } else if (input == "punishments") {
                     punishments.push(option);
                 }
             } else {
-                if (input == "neuralNetworkInputs") {
-                    neuralNetworkinputs = neuralNetworkinputs.filter((item) => item !== option);
-                } else if (input == "rewards") {
+                if (input == "rewards") {
                     rewards = rewards.filter((item) => item !== option);
                 } else if (input == "punishments") {
                     punishments = punishments.filter((item) => item !== option);

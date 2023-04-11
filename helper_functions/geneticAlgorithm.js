@@ -50,4 +50,5 @@ function getTopScore() {
     }
 
     titles.topScore.innerHTML = "Top Score: " + top;
+    updateTopScores(top);
 }

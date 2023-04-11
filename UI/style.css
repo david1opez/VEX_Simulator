@@ -160,3 +160,18 @@ canvas {
   -ms-transform: translateX(18px);
   transform: translateX(18px);
 }
+
+/* Graph */
+.graph {
+  position: absolute;
+  bottom: 35vh;
+  left: 0;
+  align-self: center;
+}
+
+#graph {
+  z-index: 1;
+  width: 97vw;
+  height: 200px;
+  border: 1px solid white;
+}

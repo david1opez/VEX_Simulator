@@ -50,14 +50,6 @@
           min="0" max="0.99" step="0.01" value="0.1"
         >
 
-        <!-- Hidden Layers -->
-        <h4 class="inputLabel hiddenLayers">Hidden Layers:</h4>
-        <input
-          type="number"
-          class="numberInput hiddenLayers"
-          min="0" max="500" value="1"
-        >
-
         <!-- Maximum Time to Live -->
         <h4 class="inputLabel timeToLive">Time to Live:</h4>
         <input
@@ -68,10 +60,6 @@
       </div>
 
       <div class="col2">
-        <!-- Neural Network Inputs -->
-        <h4 class="inputLabel">Neural Network Inputs:</h4>
-        <div class="multiselectInput neuralNetworkInputs"></div>
-
         <!-- Rewards -->
         <h4 class="inputLabel">Rewards:</h4>
         <div class="multiselectInput rewards"></div>
@@ -136,6 +124,11 @@
 
     </div>
 
+    <!-- Scores Graph -->
+    <div class="graph">
+      <canvas id="graph"></canvas>
+    </div>
+
   </body>
 
   <!-- UI Functions -->
@@ -151,6 +144,7 @@
 
 
   <!-- Helper Functions -->
+  <script src="helper_functions/graphScores.js"></script>
   <script src="helper_functions/linesIntersect.js"></script>
   <script src="helper_functions/rotatePoint.js"></script>
   <script src="helper_functions/nearestPointOnLine.js"></script>

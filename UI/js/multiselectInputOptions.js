@@ -28,24 +28,29 @@ function addOption(inputName, option, optionsContainerClass) {
     document.querySelector(`.multiselectInput.${optionsContainerClass}`).appendChild(div);
 }
 
-// Neural Network Inputs
-options = [
-    "Distance to Goal",
-]
-
-options.forEach(option => addOption("neuralNetworkInputs", option, "neuralNetworkInputs"));
-
 
 // Rewards
 options = [
-    "Distance to Goal",
+    "Move forwards",
+    "Move backwards",
+    "Turn left",
+    "Turn right",
+    "Touch disc",
+    "Intake disc",
+    "Shoot disc",
+    "Cross middle line",
+    "Score in any low goal",
+    "Score in any high goal",
+    "Score in self low goal",
+    "Score in self high goal",
+    "Score in opponent low goal",
+    "Score in opponent high goal",
+    "Touch Roller",
+    "Move Roller",
+    "Move roller to alliance color",
+    "Move roller to opponent color",
 ]
 
 options.forEach(option => addOption("rewards", option, "rewards"));
-
-// Punishments
-options = [
-    "Distance to Goal",
-]
 
 options.forEach(option => addOption("punishments", option, "punishments"));

@@ -1,5 +1,5 @@
 class Robot {
-    constructor(id, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed, brain) {
+    constructor(id, x, y, angle, acceleration, turnAcceleration, friction, turnFriction, maxSpeed, maxTurnSpeed, brain, alliance) {      
       this.id = id;
       this.size = 38; // Size of the robot
       this.x = x; // X position
@@ -25,13 +25,14 @@ class Robot {
       ];
       this.discs = 2; // Number of discs the robot has
       this.dead = false; // If the robot has crossed the central line
-      this.brain = brain ? brain.copy() : new NeuralNetwork(70, hiddenLayers, 8); // Neural network of the robot
+      this.brain = brain ? brain.copy() : new NeuralNetwork(70, 70, 8); // Neural network of the robot
       this.score = 0; // Score of the robot
       this.timeInSameSpot = 0;
       this.fitness = 0;
       this.lastShot = 0;
       this.numberOfDiscs = 30;
       this.flyingScore = 0;
+      this.alliance = alliance || "red";
     }
 
     draw() {
@@ -46,6 +47,12 @@ class Robot {
       // draw a gray rectangle at the front of the robot
       fill(0);
       rect(16, 0, 5, this.size-8);
+
+      // draw this.discs number on the center of the robot
+      fill(255);
+      textSize(14);
+      textAlign(CENTER, CENTER);
+      text(this.discs, 0, 0);
 
       pop();
     }
@@ -95,7 +102,7 @@ class Robot {
       this.checkWallCollisions();
       this.checkDiscCollisions(discs);
       if(mode === "autonomous") this.checkLineCross();
-      this.countTimeOnSameSpot();
+      if(mode === "autonomous" || mode === "programming skills") this.countTimeOnSameSpot();
       this.draw();
     }
   
@@ -124,7 +131,7 @@ class Robot {
     }
 
     intake(discs) {
-      if(discs.length >= 3) return;
+      if(this.discs >= 3) return;
 
       discs.map((disc, index) => {
         if (this.checkDiscIntakeCollision(disc)) {
@@ -211,25 +218,21 @@ class Robot {
 
     checkDiscCollisions(discs) {
       discs.map((disc, index) => {
-        if(disc.checkRobotCollision(this.corners) && disc.flying == true) {
+        if(disc.checkRobotCollision(this.corners) && disc.flying == false) {
           if(disc.collidingWalls[0] == 1) { // Disc is colliding with the left wall
             this.x = disc.x + disc.size/2 + this.size/2;
-            // this.vx = 0;
           }
 
           if(disc.collidingWalls[1] == 1) { // Disc is colliding with the top wall
             this.y = disc.y + disc.size/2 + this.size/2;
-            // this.vx = 0;
           }
 
           if(disc.collidingWalls[2] == 1) { // Disc is colliding with the right wall
             this.x = disc.x - disc.size/2 - this.size/2;
-            // this.vx = 0;
           }
 
           if(disc.collidingWalls[3] == 1) { // Disc is colliding with the bottom wall
             this.y = disc.y - disc.size/2 - this.size/2;
-            // this.vx = 0;
           }
         }
       })
@@ -289,7 +292,7 @@ class Robot {
         this.prevX/365,
         this.prevY/365,
         this.angle/365,
-        this.discs/3
+        this.discs/3,
       ];
 
       for (let i = 0; i < 30; i++) {
@@ -311,42 +314,34 @@ class Robot {
       if(output[0] > 0.5) {
         this.driveForwards();
         this.score += 1;
-        // console.log("forwards")
       }
 
       if(output[1] > 0.6) {
         this.driveBackwards();
-        // console.log("backwards")
       }
 
       if(output[2] > 0.5) {
         this.turnLeft();
-        // console.log("turn left")
       }
 
       if(output[3] > 0.5) {
         this.turnRight();
-        // console.log("turn right")
       }
 
       if(output[4] > 0.5) {
         this.stopDrive();
-        // console.log("stop drive")
       }
 
       if(output[5] > 0.5) {
         this.stopTurn();
-        // console.log("stop turn")
       }
 
       if(output[6] > 0.7) {
         this.intake(discs);
-        // console.log("intake");
       }
 
       if(output[7] > 0.7) {
         this.shoot();
-        // console.log("shoot");
       }
 
       this.move(discs);
