@@ -63,11 +63,20 @@ function initialize() {
 
   // else {
     for (let i = 0; i < population; i++) {
-      robots.push(new Robot(i, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
+      if(mode === "competition") {
+        robots.push(new Robot(0, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
+      } else {
+        robots.push(new Robot(0, 18, 83, 0, 0.5, 0.01, 0.85, 0.85, 10, 0.1));
+      }
     }
   // }
 
-  discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
+  if(mode === "competition") {
+    discs = [discsCords.map(([x,y]) => new Disc(x,y, 16.5))];
+  }
+  else {
+    discs = robots.map(() => discsCords.map(([x,y]) => new Disc(x,y, 16.5)));
+  }
 }
 
 function setup() {
@@ -109,8 +118,8 @@ function competitionControl() {
   robots[0].handleInput(discs[0]);
   discs[0].map((disc) => disc.draw(robots[0].corners));
 
-  robots[1].handleInput(discs[1], "WASD");
-  discs[1].map((disc) => disc.draw(robots[1].corners));
+  robots[1].handleInput(discs[0], "WASD");
+  discs[0].map((disc) => disc.draw(robots[1].corners));
 };
 
 function drivingControl() {
